@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_absolute_error
 
 # reading in the filtered data set to train and test
 energy_data = pd.read_excel('ELEUV0214_SM31_0214L2_61.xlsx')
@@ -40,13 +41,14 @@ all_data = df["Value"].values.astype(float)
 #print(all_data)
 
 # deciding whhere to determine having the training and testing data set
-test_data_size = len(df) - 300
+split = 0.8
+test_data_size = int(len(df) * split)
 # creating the training and testing data set
 train_data = all_data[:-test_data_size]
 test_data = all_data[-test_data_size:]
 
-print(len(train_data))
-print(len(test_data))
+# print(len(train_data))
+# print(len(test_data))
 
 #print(test_data)
 # tanh function to control flow of neural networks
@@ -73,14 +75,14 @@ def create_inout_sequences(input_data, tw):
     return inout_seq
 
 
-train_inout_seq = create_inout_sequences(train_data_normalized, train_window)
+train_inout_seq1 = create_inout_sequences(train_data_normalized, train_window)
 
-print(train_inout_seq[:5])
+# print(train_inout_seq[:5])
 
 
 # creating the LSTM model
 class LSTM(nn.Module):
-    def __init__(self, input_size=1, hidden_layer_size=100, output_size=1):
+    def __init__(self, input_size=1, hidden_layer_size=200, output_size=1):
         super().__init__()
         self.hidden_layer_size = hidden_layer_size
         self.lstm = nn.LSTM(input_size, hidden_layer_size)
@@ -98,14 +100,13 @@ model = LSTM()
 loss_function = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-print(model)
 
 
 # training the model
-epochs = 150
+epochs = 200
 
 for i in range(epochs):
-    for seq, labels in train_inout_seq:
+    for seq, labels in train_inout_seq1:
         optimizer.zero_grad()
         model.hidden_cell = (torch.zeros(1,1,model.hidden_layer_size),
                              torch.zeros(1,1,model.hidden_layer_size))
@@ -145,6 +146,8 @@ print(test_inputs[fut_pred:])
 actual_predictions = scaler.inverse_transform(np.array(test_inputs[train_window:]).reshape(-1,1))
 print(actual_predictions)
 
+
+# mean_absolute_error(y_pred, actual_predictions)
 x = np.arange(269, 369, 1)
 print(x)
 
@@ -153,5 +156,6 @@ plt.ylabel('Energy Consumption')
 plt.grid(True)
 plt.autoscale(axis='x', tight=True)
 plt.plot(df['Value'])
+
 plt.plot(x, actual_predictions)
 plt.show()
