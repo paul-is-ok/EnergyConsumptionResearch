@@ -1,8 +1,8 @@
 import xlrd
 import pandas as pd
 
-data = pd.read_csv('energyData-10-12.txt', skiprows=50000, nrows=10000)
-data.to_excel('october_sixth_batch.xlsx')
+data = pd.read_csv('energyData-10-12.txt', nrows=1048576)
+data.to_excel('october_full_set2.xlsx')
 #df = pd.DataFrame(data, columns=['Tagname', 'Timestamp', 'Value'])
 #print(df)
 #df.dropna(inplace=True)

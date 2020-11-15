@@ -9,7 +9,7 @@ from sklearn.utils import check_array
 
 
 # reading through the filtered set of data to train and test
-energy_data = pd.read_excel('ELEUV0214_SM2_0214HMBA_21.xlsx')
+energy_data = pd.read_excel('energySet/ELEUV0214_SM2_0214HMBA_21.xlsx')
 df = pd.DataFrame(energy_data, columns=['Tagname', 'Timestamp', 'Value'])
 #print(df)
 # print(df.shape)
@@ -22,9 +22,11 @@ df = pd.DataFrame(energy_data, columns=['Tagname', 'Timestamp', 'Value'])
 
 #print(timestamp)
 #print(value)
-
+# loopback window
+#
 x_train, x_test, Y_train, Y_test = train_test_split(df["Timestamp"], df["Value"], test_size=0.2, random_state=0)
 print(x_train)
+print(Y_train)
 #print(Y_train)
 # creating predictions
 def hypothesis(x, theta):
@@ -47,7 +49,7 @@ def cost(x, Y, theta):
 def make_mini_batch(x, Y, size):
     mini_batches = []
     data = np.hstack((x, Y))
-    np.random.shuffle(data)
+    #np.random.shuffle(data)
     n_minibatches = data.shape[0] // size
     for i in range(n_minibatches + 1):
         mini_batch = data[i * size:(i + 1) * size, :]
@@ -83,17 +85,17 @@ theta, error_list = gradientDescent(x_train, Y_train)
 print("Bias = ", theta[0])
 print("Coefficients = ", theta[1: ])
 
-plt.plot(error_list)
-plt.xlabel("Number of iterations")
-plt.ylabel("Cost")
-plt.show()
+#plt.plot(error_list)
+#plt.xlabel("Number of iterations")
+#plt.ylabel("Cost")
+#plt.show()
 
 # predicting output for X_test
-y_pred = hypothesis(x_test, theta)
-plt.scatter(x_test[:, 1], Y_test[:, ], marker = '.')
-plt.plot(x_test[:, 1], y_pred, color = 'orange')
-plt.show()
+#y_pred = hypothesis(x_test, theta)
+#plt.scatter(x_test[:, 1], Y_test[:, ], marker = '.')
+#plt.plot(x_test[:, 1], y_pred, color = 'orange')
+#plt.show()
 
 # calculating error in predictions
-print(mean_absolute_percentage_error(Y_test, y_pred))
+#print(mean_absolute_percentage_error(Y_test, y_pred))
 
